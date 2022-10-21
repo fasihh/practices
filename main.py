@@ -1,75 +1,121 @@
-import random
+import random as r
+import time
 
 
-class IslandClass:
-    found = "X"
-    notfound = "O"
-    treasure = "T"
-    sand = "."
-    status = False
-    Grid = []
-
+class Desert:
+    grid = []
+    animalList = []
+    numberOfAnimals = 0
 
     def __init__(self):
-        self.Grid = [[self.sand for i in range(10)] for i in range (30)]
+        self.grid = [["." for i in range(40)] for j in range(40)]
+
+        for i in range(5):
+            AnimalObj = Animal()
+            self.animalList.append(AnimalObj)
+
+        for j in range(10):
+            self.GenerateFood()
+
+        self.stepCounter = 0
+
+    def IncrementStepCounter(self):
+        pass
+
+    def GenerateFood(self):
+        placed = False
+        while not placed:
+            X = r.randint(0, 39)
+            Y = r.randint(0, 39)
+
+            if self.grid[Y][X] != "F" and self.grid[Y][X] != "A":
+                self.grid[Y][X] = "F"
+                placed = True
 
 
-    def HideTreasure(self):
-        treasureX = random.randint(0, 29)
-        treasureY = random.randint(0, 9)
+    def DisplayGrid(self):
 
-        if self.Grid[treasureX][treasureY] != self.treasure:
-            self.Grid[treasureX][treasureY] = self.treasure
+        for x in range(len(self.animalList)):
+            Xpos = self.animalList[x].across
+            Ypos = self.animalList[x].down
+            self.grid[Ypos][Xpos] = "A"
+
+
+        for i in range(40):
+            display = ""
+            for j in range(40):
+                display = display + "  " + self.grid[j][i]
+            print(display)
+
+        print(" ")
+
+
+
+
+class Animal:
+    across = 0
+    down = 0
+
+    def __init__(self):
+        placeX = r.randint(0, 39)
+        placeY = r.randint(0, 39)
+        self.across = placeX
+        self.down = placeY
+        self.score = 0
+
+    def SetDown(self, val):
+        self.down = val
+
+    def GetDown(self):
+        return self.down
+
+    def SetAcross(self, val):
+        self.across = val
+
+    def GetAcross(self):
+        return self.across
+
+    def Move(self):
+        desert.grid[self.down][self.across] = "."
+
+        self.across = GenerateChangeInCoordinate(self.across)
+        self.down = GenerateChangeInCoordinate(self.down)
+
+        if desert.grid[self.down][self.across] == "F":
+            self.EatFood()
+            desert.grid[self.down][self.across] = "A"
         else:
-            treasureX = random.randint(0, 29)
-            treasureY = random.randint(0, 9)
-            self.Grid[treasureX][treasureY] = self.treasure
+            desert.grid[self.down][self.across] = "A"
 
 
-    def DigHole(self, X, Y):
-        if self.Grid[X][Y] == self.treasure:
-            self.Grid[X][Y] = self.found
-            self.status = True
-        else:
-            self.Grid[X][Y] = self.notfound
+    def EatFood(self):
+        self.score += 1
+        desert.GenerateFood()
+        desert.animalList.append(Animal())
 
 
-    def GetSquare(self, X, Y):
-        return self.Grid[X][Y]
+def GenerateChangeInCoordinate(val):
+    if val == 39:
+        val += r.randint(-1, 0)
+    elif val == 0:
+        val += r.randint(0, 1)
+    else:
+        val += r.randint(-1, 1)
+
+    return val
 
 
-    def GetStatus(self):
-        if self.status == True:
-            print("you found the treasure! :)")
-        else:
-            print("you couldn't find the treasure. :(")
+def Wave():
+    for i in range(len(Desert.animalList)):
+        desert.animalList[i].Move()
+    desert.DisplayGrid()
 
 
-def DisplayGrid():
-    for i in range(10):
-        square = ""
-        for col in range(30):
-            square = square + " " + Island.GetSquare(col, i)
-        print(square)
-    print(" ")
+desert = Desert()
+
+desert.DisplayGrid()
 
 
-def StartDig():
-    x = int(input("input value for col: "))
-    y = int(input("input value for row: "))
-
-    Island.DigHole(x, y)
-
-
-Island = IslandClass()
-
-DisplayGrid()
-
-for i in range(3):
-    Island.HideTreasure()
-
-StartDig()
-
-DisplayGrid()
-
-Island.GetStatus()
+while True:
+    time.sleep(0.5)
+    Wave()
