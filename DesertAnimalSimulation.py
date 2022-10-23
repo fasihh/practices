@@ -1,6 +1,12 @@
 import random as r
 import time
+import os
 
+animal = "A"
+food = "F"
+gridSize = 20
+animalCount = 5
+foodCount = 1
 
 class Desert:
     grid = []
@@ -8,47 +14,44 @@ class Desert:
     numberOfAnimals = 0
 
     def __init__(self):
-        self.grid = [["." for i in range(40)] for j in range(40)]
+        self.grid = [["." for i in range(gridSize)] for j in range(gridSize)]
 
-        for i in range(5):
+        for i in range(animalCount):
             AnimalObj = Animal()
             self.animalList.append(AnimalObj)
+            self.IncrementNumberCounter()
 
-        for j in range(10):
+        for j in range(foodCount):
             self.GenerateFood()
 
         self.stepCounter = 0
 
-    def IncrementStepCounter(self):
-        pass
+    def IncrementNumberCounter(self):
+        self.numberOfAnimals += 1
 
     def GenerateFood(self):
         placed = False
         while not placed:
-            X = r.randint(0, 39)
-            Y = r.randint(0, 39)
+            X = r.randint(0, gridSize - 1)
+            Y = r.randint(0, gridSize - 1)
 
-            if self.grid[Y][X] != "F" and self.grid[Y][X] != "A":
-                self.grid[Y][X] = "F"
+            if self.grid[Y][X] != food and self.grid[Y][X] != animal:
+                self.grid[Y][X] = food
                 placed = True
-
 
     def DisplayGrid(self):
 
         for x in range(len(self.animalList)):
             Xpos = self.animalList[x].across
             Ypos = self.animalList[x].down
-            self.grid[Ypos][Xpos] = "A"
+            self.grid[Ypos][Xpos] = animal
 
-
-        for i in range(40):
+        for i in range(gridSize):
             display = ""
-            for j in range(40):
+            for j in range(gridSize):
                 display = display + "  " + self.grid[j][i]
             print(display)
-
-        print(" ")
-
+        print("total animals: " + str(self.numberOfAnimals) + "\n ")
 
 
 
@@ -57,8 +60,8 @@ class Animal:
     down = 0
 
     def __init__(self):
-        placeX = r.randint(0, 39)
-        placeY = r.randint(0, 39)
+        placeX = r.randint(0, gridSize - 1)
+        placeY = r.randint(0, gridSize - 1)
         self.across = placeX
         self.down = placeY
         self.score = 0
@@ -66,36 +69,37 @@ class Animal:
     def SetDown(self, val):
         self.down = val
 
-    def GetDown(self):
-        return self.down
-
     def SetAcross(self, val):
         self.across = val
-
-    def GetAcross(self):
-        return self.across
 
     def Move(self):
         desert.grid[self.down][self.across] = "."
 
-        self.across = GenerateChangeInCoordinate(self.across)
-        self.down = GenerateChangeInCoordinate(self.down)
+        self.SetAcross(GenerateChangeInCoordinate(self.across))
+        self.SetDown(GenerateChangeInCoordinate(self.down))
 
-        if desert.grid[self.down][self.across] == "F":
+        if desert.grid[self.down][self.across] == food:
             self.EatFood()
-            desert.grid[self.down][self.across] = "A"
+            desert.grid[self.down][self.across] = animal
+        elif desert.grid[self.down][self.across] == animal:
+            placed = False
+            while not placed:
+                self.SetAcross(GenerateChangeInCoordinate(self.across))
+                self.SetDown(GenerateChangeInCoordinate(self.down))
+                if desert.grid[self.down][self.across] != animal:
+                    placed = True
         else:
-            desert.grid[self.down][self.across] = "A"
-
+            desert.grid[self.down][self.across] = animal
 
     def EatFood(self):
         self.score += 1
         desert.GenerateFood()
+        desert.IncrementNumberCounter()
         desert.animalList.append(Animal())
 
 
 def GenerateChangeInCoordinate(val):
-    if val == 39:
+    if val == gridSize - 1:
         val += r.randint(-1, 0)
     elif val == 0:
         val += r.randint(0, 1)
@@ -111,11 +115,26 @@ def Wave():
     desert.DisplayGrid()
 
 
+def Start(val):
+    count = 0
+    while count != val:
+        time.sleep(3)
+        count += 1
+        os.system('cls')
+        Wave()
+    print("All animal scores: ")
+    for i in range(len(desert.animalList)):
+        print(desert.animalList[i].score)
+
+
+loopCount = int(input("how many times do you want to loop?: "))
+gridSize = int(input("how much grid space? (square space, one dimension only): "))
+animalCount = int(input("how many animals at the start?: "))
+foodCount = int(input("how much food throughout the simulation?: "))
 desert = Desert()
+Start(loopCount)
 
-desert.DisplayGrid()
 
 
-while True:
-    time.sleep(0.5)
-    Wave()
+
+
