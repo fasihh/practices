@@ -5,7 +5,7 @@ class DatabaseHandling:
     myDatabase = mysql.connector.connect(
         host="localhost",
         user="root",
-        passwd="fasih123",
+        passwd="pass",
         database="testdatabase"
     )
 
