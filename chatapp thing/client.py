@@ -83,28 +83,3 @@ class Client:
         return username, password
 
 clientObj = Client()
-
-"""""
-        if not userExists:
-            print("Invalid login")
-            option = input("Do you want to retry or make a new user (type E for exit)? (R/N): ").lower()
-            while option != "y" and option != "n" and option != "e":
-                option = input("Do you want to make a new user? (R/N): ").lower()
-
-            if option == "n":
-                    username, password = self.UserPass()
-                    self.sendObj(("new", True))
-                    self.sendObj((username, password))
-                    errorMessage, status = self.recvObj(2048)
-                    print(errorMessage)
-                    if not status:
-                        sys.exit()
-            elif option == "e":
-                self.clientSocket.send(pickle.dumps(("", False)))
-                sys.exit()
-            elif option == "r":
-                userInfoTuple = self.UserPass()
-                self.sendObj(userInfoTuple)
-                userExists = self.recvObj(16)
-"""""
-
