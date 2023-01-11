@@ -84,6 +84,3 @@ class Server:
 
 
 serverObj = Server()
-
-#store username and password in database
-#give user option to send message where
