@@ -86,8 +86,8 @@ int main()
 {
 	List list = List();
 
-	List *list_list = new List();
-
+	list.insert("test1");
+	list.insert("test1");
 	list.insert("test1");
 
 	list.print();
